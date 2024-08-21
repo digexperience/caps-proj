@@ -22,6 +22,7 @@
                             <th data-priority="3"><b>Phone Number</b></th>
                             <th data-priority="4"><b>Email</b></th>
                             <th data-priority="5"><b>Status</b></th>
+                            <th data-priority="6"></th>
                             <th style="width: 10%;" data-priority="6"></th>
                         </tr>
                     </thead>
@@ -42,11 +43,16 @@
                                 {{ $user->status == 1 ? 'Active' : 'Deactive' }}
                             </td>
                             <td>
-                                <a class="dropdown-item" href="#edit{{ $user->id }}" data-toggle="modal">
-                                    <i class="mdi mdi-pencil"></i> Edit
+                                <a class="btn btn-success" href="#schedule{{ $user->id }}" data-toggle="modal">
+                                    Upload Schedule
                                 </a>
-                                <a class="dropdown-item" href="#delete{{ $user->id }}" data-toggle="modal">
-                                    <i class="mdi mdi-trash-can-outline"></i> Delete
+                            </td>
+                            <td>
+                                <a class="btn btn-info" href="#edit{{ $user->id }}" data-toggle="modal">
+                                    <i class="mdi mdi-pencil"></i>
+                                </a>
+                                <a class="btn btn-danger" href="#sched{{ $user->id }}" data-toggle="modal">
+                                    <i class="mdi mdi-trash-can-outline"></i>
                                 </a>
                             </td>
                         </tr>
@@ -63,6 +69,9 @@
 </div> <!-- end row -->
 @foreach ($users as $user)
     @include('includes.editdeleteuser')
+@endforeach
+@foreach ($users as $user)
+    @include('includes.addschedule')
 @endforeach
 @include('includes.adduser')
 @include('includes.flash')
