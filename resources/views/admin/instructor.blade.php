@@ -15,15 +15,15 @@
                 <table id="datatable-buttons" class="table table-striped table-hover table-bordered dt-responsive nowrap" style="border-collapse: collapse; border-spacing: 0; width: 100%;">
                     <thead class="thead-dark">
                         <tr>
-                            <th data-priority="1"><b>Profile Picture</b></th>
-                            <th data-priority="2"><b>First Name</b></th>
-                            <th data-priority="3"><b>M.I.</b></th>
-                            <th data-priority="3"><b>Last Name</b></th>
-                            <th data-priority="3"><b>Phone Number</b></th>
-                            <th data-priority="4"><b>Email</b></th>
-                            <th data-priority="5"><b>Status</b></th>
-                            <th data-priority="6"></th>
-                            <th style="width: 10%;" data-priority="6"></th>
+                            <th><b>Profile Picture</b></th>
+                            <th><b>First Name</b></th>
+                            <th><b>M.I.</b></th>
+                            <th><b>Last Name</b></th>
+                            <th><b>Phone Number</b></th>
+                            <th><b>Email</b></th>
+                            <th><b>Status</b></th>
+                            <th style="width: 15%;"></th>
+                            <th style="width: 10%;"></th>
                         </tr>
                     </thead>
                     <tbody>
@@ -43,22 +43,45 @@
                                 {{ $user->status == 1 ? 'Active' : 'Deactive' }}
                             </td>
                             <td>
-                                <a class="btn btn-success" href="#schedule{{ $user->id }}" data-toggle="modal">
-                                    Upload Schedule
-                                </a>
+                                @if(in_array($user->id, $sched))
+                                <div class="row">
+                                    <div class="col-6 m-0 pr-1">
+                                        <a style="width: 100%; color: #FFF !important;" class="btn btn-info m-0" href="{{ route('schedules.view', ['user' => $user->id]) }}">
+                                            View
+                                        </a>
+                                    </div>
+                                    <div class="col-6 m-0 pl-1">
+                                        <a style="width: 100%; color: #FFF !important;" class="btn btn-danger" href="#deletesched{{ $user->id }}" data-toggle="modal">
+                                            Delete
+                                        </a>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-12">
+                                        <a style="width: 100%; color: #FFF !important;" class="btn btn-warning mt-2" href="#schedule{{ $user->id }}" data-toggle="modal">
+                                            Update Schedule
+                                        </a>
+                                    </div>
+                                </div>
+                                @else
+                                    <a style="width: 100%; color: #FFF !important;" class="btn btn-success" href="#schedule{{ $user->id }}" data-toggle="modal">
+                                        Upload Schedule
+                                    </a>
+                                @endif
                             </td>
+
                             <td>
-                                <a class="btn btn-info" href="#edit{{ $user->id }}" data-toggle="modal">
+                                <a style="color: #FFF !important;" class="btn btn-info" href="#edit{{ $user->id }}" data-toggle="modal">
                                     <i class="mdi mdi-pencil"></i>
                                 </a>
-                                <a class="btn btn-danger" href="#sched{{ $user->id }}" data-toggle="modal">
+                                <a style="color: #FFF !important;" class="btn btn-danger" href="#delete{{ $user->id }}" data-toggle="modal">
                                     <i class="mdi mdi-trash-can-outline"></i>
                                 </a>
                             </td>
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="6" class="text-center">No Instructor Account Registered</td>
+                            <td colspan="9" class="text-center">No Instructor Account Registered</td>
                         </tr>
                     @endforelse
                     </tbody>
@@ -66,13 +89,56 @@
             </div>
         </div>
     </div>
-</div> <!-- end row -->
+</div>
+
 @foreach ($users as $user)
     @include('includes.editdeleteuser')
+    @include('includes.addschedule', ['user' => $user])
 @endforeach
-@foreach ($users as $user)
-    @include('includes.addschedule')
-@endforeach
+
 @include('includes.adduser')
 @include('includes.flash')
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    @foreach ($users as $user)
+        document.getElementById('scheduleFile{{ $user->id }}').addEventListener('change', function(event) {
+            let file = event.target.files[0];
+
+            if (file) {
+                let formData = new FormData();
+                formData.append('scheduleFile', file);
+
+                fetch('{{ route("schedules.getSheets") }}', {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                    },
+                    body: formData,
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.sheets && data.sheets.length > 0) {
+                        let sheetSelect = document.getElementById('sheetName{{ $user->id }}');
+                        sheetSelect.innerHTML = '';
+
+                        data.sheets.forEach(sheet => {
+                            let option = document.createElement('option');
+                            option.value = sheet;
+                            option.text = sheet;
+                            sheetSelect.appendChild(option);
+                        });
+
+                        document.getElementById('sheetSelection{{ $user->id }}').style.display = 'block';
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                });
+            }
+        });
+    @endforeach
+});
+</script>
+
 @endsection

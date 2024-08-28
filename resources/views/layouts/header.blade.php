@@ -1,7 +1,7 @@
 <div class="topbar" id="barbar">
     <div class="topbar-left">
         <a href="/" class="logo logo-size">
-            <img src="assets/images/logo.png" alt="LOGO" class="rounded-circle mr-2">
+            <img src="http://caps-proj.test/assets/images/logo.png" alt="LOGO" class="rounded-circle mr-2">
         </a>
     </div>
     <nav class="navbar-custom">
@@ -10,10 +10,10 @@
                 <div class="dropdown notification-list nav-pro-img">
                     <a class="dropdown-toggle nav-link arrow-none waves-effect nav-user" data-toggle="dropdown" href="#" role="button" aria-haspopup="false" aria-expanded="false">
                         <span class="mr-2 d-none d-lg-inline text-gray-600 small">Hi {{ Auth()->user()->fname }}</span>
-                        <img @if (Auth()->user()->image == "") src="assets/images/profile-dummy.png" @elseif (Auth()->user()->image !== "") src="assets/images/{{ Auth()->user()->image }}" @endif alt="user" class="rounded-circle">
+                        <img @if (Auth()->user()->image == "") src="http://caps-proj.test/assets/images/profile-dummy.png" @elseif (Auth()->user()->image !== "") src="http://caps-proj.test/assets/images/{{ Auth()->user()->image }}" @endif alt="user" class="rounded-circle">
                     </a>
                     <div class="dropdown-menu dropdown-menu-right profile-dropdown">
-                        <a class="dropdown-item" href="/userprofile"><i class="mdi mdi-account-circle m-r-5"></i> Profile</a>
+                        <a class="dropdown-item" href="/profile"><i class="mdi mdi-account-circle m-r-5"></i> Profile</a>
                         <a class="dropdown-item text-danger" href="{{ route('logout') }}" onclick="event.preventDefault();
                             document.getElementById('logout-form').submit();"><i class="mdi mdi-power text-danger"></i> {{ __('Logout') }}</a>
                         <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">

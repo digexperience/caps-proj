@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\User;
 use App\Models\Role;
+use App\Models\Schedule;
 use App\Http\Requests\UserAdd;
 use App\Http\Requests\UserUp;
 use RealRashid\SweetAlert\Facades\Alert;
@@ -20,10 +21,10 @@ class Instructors extends Controller
             $users = User::whereHas('roles', function($query) {
                 $query->where('role', '0');
             })->get();
-
-            return view('admin.instructor')->with(['users' => $users, 'roles' => Role::all()]);
+            $sched = Schedule::pluck('user_sched_id')->unique()->toArray();
+            return view('admin.instructor')->with(['users' => $users, 'roles' => Role::all(), 'sched' => $sched]);
         }
-    }
+    }    
 
     protected function store(UserAdd $request)
     {
@@ -79,7 +80,7 @@ class Instructors extends Controller
 
             if ($request->filled('password')) {
                 $request->validate([
-                    'password' => 'string|min:8'
+                    'password' => 'string|min:8|regex:/^\S*$/u'
                 ]);
             }
 
@@ -142,6 +143,7 @@ class Instructors extends Controller
             $image_old = $path.$user[0]['image'];
             unlink($image_old);
         }
+        Schedule::where('user_sched_id', $request)->delete();
         User::whereId($request)->delete();
         Role::whereId($request)->delete();
         flash()->success('Success', 'Instructor Account has been Deleted successfully !');
